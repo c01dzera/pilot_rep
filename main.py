@@ -1,18 +1,3 @@
-"""
-Реализации контейнера:
-5. Объектная реализация контейнера на основе комбинированной
-структуры «Стек-массив динамических списков»
-
-Варианты информационного наполнения контейнера
-
-1.	Задача «Студенческие группы»
-	информационные объекты: студенты (свойства – Фамилия, Возраст)
-	студенты объединяются в рамках объекта Группа (свойство – Номер)
-	группы объединяются в рамках объекта-контейнера Факультет
-(свойство – НазваниеФакультета)
-
-"""
-
 from university.structure import Student, GroupOfStudent, Faculty
 
 
@@ -45,6 +30,7 @@ def passage_from_deposit_to_faculty(group_name):
 
 
 def add_student_in_group(student_name, student_age, some_group: GroupOfStudent):
+    """Добавление студента в группу"""
     for students in some_group:
         if students.last_name == student_name:
             ans = input(f"Студент {student_name} уже есть в группе, добавить (y/n)")
@@ -57,6 +43,7 @@ def add_student_in_group(student_name, student_age, some_group: GroupOfStudent):
 
 
 def search_student(student_name, some_group: GroupOfStudent):
+    """Поиск студента в группе"""
     for inx, students in enumerate(some_group):
         if students.last_name == student_name:
             return inx, students
@@ -159,6 +146,7 @@ def student_act(act):
 
 
 def display_faculty():
+    """Вывод всей структуры"""
     while save_deposit:
         group = save_deposit.pop()
         faculty.push(group)
