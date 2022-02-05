@@ -25,6 +25,9 @@ class LinkedList:
     def clear(self):
         self.__head = None
 
+    def is_empty(self):
+        return self.__head is None
+
     def __iter__(self):
         return LinkedList.LinkedListIterator(self.__head)
 

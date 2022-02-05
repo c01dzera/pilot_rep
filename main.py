@@ -1,18 +1,3 @@
-"""
-Реализации контейнера:
-5. Объектная реализация контейнера на основе комбинированной
-структуры «Стек-массив динамических списков»
-
-Варианты информационного наполнения контейнера
-
-1.	Задача «Студенческие группы»
-	информационные объекты: студенты (свойства – Фамилия, Возраст)
-	студенты объединяются в рамках объекта Группа (свойство – Номер)
-	группы объединяются в рамках объекта-контейнера Факультет
-(свойство – НазваниеФакультета)
-
-"""
-
 from university.structure import Student, GroupOfStudent, Faculty
 
 
@@ -20,10 +5,11 @@ def passage_from_faculty_to_deposit(group_name):
     if faculty.is_empty():
         print("Факультет пуст")
         return
-    while faculty.is_empty():
+    while faculty.size() != 0:
         cur_group = faculty.pop()
-        if cur_group.group_name == group_name:
+        if cur_group.group_number == group_name:
             faculty.push(cur_group)
+            print(cur_group.group_number)  # удалить
             return cur_group
         save_deposit.push(cur_group)
     print(f"Группа {group_name} не найдена")
@@ -34,10 +20,11 @@ def passage_from_deposit_to_faculty(group_name):
     if save_deposit.is_empty():
         print("Депозит пуст")
         return
-    while save_deposit.is_empty():
+    while save_deposit.size() != 0:
         cur_group = save_deposit.pop()
-        if cur_group.group_name == group_name:
+        if cur_group.group_number == group_name:
             faculty.push(cur_group)
+            print(cur_group.group_number) # удалить
             return cur_group
         faculty.push(cur_group)
     print(f"Группа {group_name} не найдена")
@@ -45,6 +32,7 @@ def passage_from_deposit_to_faculty(group_name):
 
 
 def add_student_in_group(student_name, student_age, some_group: GroupOfStudent):
+    """Добавление студента в группу"""
     for students in some_group:
         if students.last_name == student_name:
             ans = input(f"Студент {student_name} уже есть в группе, добавить (y/n)")
@@ -57,6 +45,7 @@ def add_student_in_group(student_name, student_age, some_group: GroupOfStudent):
 
 
 def search_student(student_name, some_group: GroupOfStudent):
+    """Поиск студента в группе"""
     for inx, students in enumerate(some_group):
         if students.last_name == student_name:
             return inx, students
@@ -66,18 +55,23 @@ def search_student(student_name, some_group: GroupOfStudent):
 def action():
     act = input("Добавить - 1\n"
                 "Удалить - 2\n"
-                "Изменение данных - 3\n")
+                "Изменение данных - 3\n"
+                "Назад - 4\n")
     return act
 
 
-def faculty_act(act):  # Взаимодейстие с факльтетом
+def faculty_act(act):  # Взаимодейстие с факльтетом (работает)
     if act == "1":
         print(f"\n{faculty.faculty_name}\n")
     elif act == "2":
         faculty.faculty_name = input("Введите новое название факультета: ")
+    elif act == "3":
+        return
 
 
-def group_act(act):  # Взаимодейстие с группой
+def group_act(act):  # Взаимодейстие с группой <------------- переделать
+    if act == "4":
+        return
     new_group = input("Введите номер группы: ")
     cur_group = passage_from_deposit_to_faculty(new_group) or passage_from_faculty_to_deposit(new_group)
     if act == "1":
@@ -88,7 +82,7 @@ def group_act(act):  # Взаимодейстие с группой
         faculty.push(group)
         print(f"\nГруппа {new_group} добавлена\n")
         return
-    if cur_group:
+    elif cur_group:
         if act == "2":
             faculty.pop()
             print(f"\nГруппа {new_group} была удалена\n")
@@ -110,7 +104,7 @@ def student_act(act):
     if act == "1":
         student_age = input("Введите возраст студента: ")
         student_group = input("Введите номер группы для добавления студента: ")
-        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_faculty_to_deposit(student_name)
+        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_faculty_to_deposit(student_group)
         if cur_group:
             add_student_in_group(student_name, student_age, cur_group)
         else:
@@ -121,7 +115,7 @@ def student_act(act):
 
     elif act == "2":
         student_group = input("Введите номер группы студента для удаления: ")
-        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_faculty_to_deposit(student_name)
+        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_faculty_to_deposit(student_group)
         if cur_group:
             cur_student = search_student(student_name, cur_group)[0]
             if cur_student:
@@ -134,7 +128,7 @@ def student_act(act):
 
     elif act == "3":
         student_group = input("Введите номер группы студента: ")
-        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_faculty_to_deposit(student_name)
+        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_faculty_to_deposit(student_group)
         if cur_group:
             cur_student = search_student(student_name, cur_group)[1]
             if cur_student:
@@ -159,14 +153,19 @@ def student_act(act):
 
 
 def display_faculty():
-    while save_deposit:
+    """Вывод всей структуры"""
+    while save_deposit.size() != 0:
         group = save_deposit.pop()
         faculty.push(group)
-    while faculty:
+    while faculty.size() != 0:
         cur_group = faculty.pop()
-        print(f"\n{cur_group.group_namber}\n")
-        for students in cur_group:
-            print(f"[{students.last_name}: {students}]", end=' ')
+        print(f"\nНомер группы: {cur_group.group_number}")
+        if not cur_group.is_empty():
+            for students in cur_group:
+                print(f"[{students.last_name}: {students}]", end=' ')
+        else:
+            print("\nВ группе пока нет студентов")
+        print()
         save_deposit.push(cur_group)
 
 
@@ -182,7 +181,8 @@ def choice(user_choice):
     if user_choice == "1":
         print("\nФакультет: ")
         faculty_act(input("Вывести название факультета - 1\n"
-                          "Изменить название факультета - 2\n"))
+                          "Изменить название факультета - 2\n"
+                          "Назад - 3\n"))
 
     elif user_choice == "2":
         print("Группа: ")
