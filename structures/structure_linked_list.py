@@ -1,4 +1,4 @@
-class LinkedList:
+class LinkedList:  # TODO описание методов класса
 
     class LinkedListElement:
         def __init__(self, value, next_node=None):

@@ -3,13 +3,11 @@ from university.structure import Student, GroupOfStudent, Faculty
 
 def passage_from_faculty_to_deposit(group_name):
     if faculty.is_empty():
-        print("Факультет пуст")
         return
     while faculty.size() != 0:
         cur_group = faculty.pop()
         if cur_group.group_number == group_name:
             faculty.push(cur_group)
-            print(cur_group.group_number)  # удалить
             return cur_group
         save_deposit.push(cur_group)
     print(f"Группа {group_name} не найдена")
@@ -18,13 +16,11 @@ def passage_from_faculty_to_deposit(group_name):
 
 def passage_from_deposit_to_faculty(group_name):
     if save_deposit.is_empty():
-        print("Депозит пуст")
         return
     while save_deposit.size() != 0:
         cur_group = save_deposit.pop()
         if cur_group.group_number == group_name:
             faculty.push(cur_group)
-            print(cur_group.group_number) # удалить
             return cur_group
         faculty.push(cur_group)
     print(f"Группа {group_name} не найдена")
@@ -40,8 +36,12 @@ def add_student_in_group(student_name, student_age, some_group: GroupOfStudent):
                 student = Student(student_name, student_age)
                 some_group.add(student)
                 print(f"Студент {student_name} добавлен в группу \n")
+                return
             elif ans == "n":
                 return
+    new_student = Student(student_name, student_age)
+    some_group.add(new_student)
+    print(f"Студент {student_name} добавлен в группу {some_group.group_number}\n")
 
 
 def search_student(student_name, some_group: GroupOfStudent):
@@ -60,7 +60,7 @@ def action():
     return act
 
 
-def faculty_act(act):  # Взаимодейстие с факльтетом (работает)
+def faculty_act(act):  # Взаимодейстие с факльтетом
     if act == "1":
         print(f"\n{faculty.faculty_name}\n")
     elif act == "2":
@@ -69,7 +69,7 @@ def faculty_act(act):  # Взаимодейстие с факльтетом (р�
         return
 
 
-def group_act(act):  # Взаимодейстие с группой <------------- переделать
+def group_act(act):  # Взаимодейстие с группой
     if act == "4":
         return
     new_group = input("Введите номер группы: ")
@@ -90,28 +90,30 @@ def group_act(act):  # Взаимодейстие с группой <-----------
         elif act == "3":
             new_group_number = input("Введите новый номер группы: ")
             cur_group.group_number = new_group_number
-            print("Номер группы был изменен")
+            print("Номер группы был изменен\n")
             return
-        return
-    return
-    # else:
-    #     print(f"\nГруппа {new_group} не найдена\n")
+    else:
+        print(f"\nГруппа {new_group} не найдена\n")
 
 
-def student_act(act):
+def student_act(act):  # TODO  исправить ошибку с добалением студента
     student_name = input("Введите фамилию студета: ")
 
     if act == "1":
         student_age = input("Введите возраст студента: ")
         student_group = input("Введите номер группы для добавления студента: ")
-        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_faculty_to_deposit(student_group)
+        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_deposit_to_faculty(student_group)
         if cur_group:
             add_student_in_group(student_name, student_age, cur_group)
         else:
-            cur_group = GroupOfStudent(student_group)
-            student = Student(student_name, student_age)
-            cur_group.add(student)
-            faculty.push(cur_group)
+            ans = input("Такой группы нет, хотите создать ? (y/n)")
+            if ans == "y":
+                cur_group = GroupOfStudent(student_group)
+                student = Student(student_name, student_age)
+                cur_group.add(student)
+                faculty.push(cur_group)
+            elif ans == "n":
+                return
 
     elif act == "2":
         student_group = input("Введите номер группы студента для удаления: ")
@@ -162,18 +164,18 @@ def display_faculty():
         print(f"\nНомер группы: {cur_group.group_number}")
         if not cur_group.is_empty():
             for students in cur_group:
-                print(f"[{students.last_name}: {students}]", end=' ')
+                print(f"[{students.last_name}: {students.age}]", sep=',', end=' ')
         else:
             print("\nВ группе пока нет студентов")
-        print()
+        print("\n")
         save_deposit.push(cur_group)
 
 
-def download():
+def download():  # TODO выгрузка с файл
     pass
 
 
-def save():
+def save():  # TODO запись в файл
     pass
 
 
@@ -210,8 +212,10 @@ def main():
 
 
 if __name__ == "__main__":
-    if "json файл пуст":
+    if "json файл пуст":  # TODO взаимодействие с файлом .json
         faculty = Faculty("К.Т")
         save_deposit = Faculty("Save Deposit")
     # else подгрузка с json файла
     main()
+
+# TODO описание функций

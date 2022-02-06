@@ -1,4 +1,4 @@
-class StackArray:
+class StackArray:  # TODO описание методов класса
 
     def __init__(self):
         self.__lst = []
