@@ -2,7 +2,7 @@ from structures.structure_array import StackArray
 from structures.structure_linked_list import LinkedList
 
 
-class Student:
+class Student:  # TODO описание методов класса
 
     def __init__(self, last_name, age):
         self.__last_name = last_name
