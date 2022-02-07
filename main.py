@@ -64,7 +64,7 @@ def faculty_act(act):  # Взаимодейстие с факльтетом
     if act == "1":
         print(f"\n{faculty.faculty_name}\n")
     elif act == "2":
-        faculty.faculty_name = input("Введите новое название факультета: ")
+        faculty.faculty_name = input("Введите новое название факультета: ").title()
     elif act == "3":
         return
 
@@ -96,8 +96,8 @@ def group_act(act):  # Взаимодейстие с группой
         print(f"\nГруппа {new_group} не найдена\n")
 
 
-def student_act(act):  # TODO  исправить ошибку с добалением студента
-    student_name = input("Введите фамилию студета: ")
+def student_act(act):
+    student_name = input("Введите фамилию студета: ").title()
 
     if act == "1":
         student_age = input("Введите возраст студента: ")
@@ -117,11 +117,11 @@ def student_act(act):  # TODO  исправить ошибку с добален
 
     elif act == "2":
         student_group = input("Введите номер группы студента для удаления: ")
-        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_faculty_to_deposit(student_group)
+        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_deposit_to_faculty(student_group)
         if cur_group:
-            cur_student = search_student(student_name, cur_group)[0]
+            cur_student = search_student(student_name, cur_group)
             if cur_student:
-                cur_group.pop(cur_student)
+                cur_group.pop(cur_student[0])
                 print(f"\nСтудент {student_name} был удален\n")
             else:
                 print(f"\nСтудент {student_name} не найден\n")
@@ -130,24 +130,25 @@ def student_act(act):  # TODO  исправить ошибку с добален
 
     elif act == "3":
         student_group = input("Введите номер группы студента: ")
-        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_faculty_to_deposit(student_group)
+        cur_group = passage_from_faculty_to_deposit(student_group) or passage_from_deposit_to_faculty(student_group)
         if cur_group:
             cur_student = search_student(student_name, cur_group)[1]
             if cur_student:
                 ans = input("\nИзменить фамилию - 1\n"
                             "\nИзменить возраст - 2\n"
-                            "\nИзменить все данные -3 \n")
+                            "\nИзменить все данные - 3 \n")
                 if ans == "1":
-                    new_student_name = input("Введите фамилию для изменения: ")
+                    new_student_name = input("Введите фамилию для изменения: ").title()
                     cur_student.last_name = new_student_name
                 elif ans == "2":
                     new_age = input("Введите возраст студента для изменения: ")
                     cur_student.age = new_age
                 elif ans == "3":
-                    new_student_name = input("Введите фамилию для изменения: ")
+                    new_student_name = input("Введите фамилию для изменения: ").title()
                     new_age = input("Введите возраст студента для изменения: ")
                     cur_student.last_name = new_student_name
                     cur_student.age = new_age
+                    print("Данные успешно изменены")
             else:
                 print(f"\nСтудент {student_name} не найден\n")
         else:
@@ -156,6 +157,8 @@ def student_act(act):  # TODO  исправить ошибку с добален
 
 def display_faculty():
     """Вывод всей структуры"""
+    if not save_deposit.size() and not faculty.size():
+        print("\nВ факультете пока нет групп\n")
     while save_deposit.size() != 0:
         group = save_deposit.pop()
         faculty.push(group)
@@ -187,11 +190,11 @@ def choice(user_choice):
                           "Назад - 3\n"))
 
     elif user_choice == "2":
-        print("Группа: ")
+        print("\nГруппа: ")
         group_act(action())
 
     elif user_choice == "3":
-        print("Студент: ")
+        print("\nСтудент: ")
         student_act(action())
 
     elif user_choice == "4":
@@ -200,7 +203,7 @@ def choice(user_choice):
 
 def main():
     while True:
-        user_choice = input("Факультет - 1\n"
+        user_choice = input("\nФакультет - 1\n"
                             "Группа - 2\n"
                             "Студент - 3\n"
                             "Вывод всей структуры - 4\n"
@@ -219,3 +222,5 @@ if __name__ == "__main__":
     main()
 
 # TODO описание функций
+
+
