@@ -19,5 +19,3 @@ class StackArray:  # TODO описание методов класса
 
     def size(self):
         return len(self.__lst)
-
-

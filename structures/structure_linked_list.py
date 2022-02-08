@@ -77,5 +77,3 @@ class LinkedList:  # TODO описание методов класса
             return element.value
 
         return None
-
-
