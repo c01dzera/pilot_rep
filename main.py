@@ -97,6 +97,10 @@ def group_act(act):  # Взаимодейстие с группой
 
 
 def student_act(act):
+
+    if act == "4":
+        return
+
     student_name = input("Введите фамилию студета: ").title()
 
     if act == "1":
