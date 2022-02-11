@@ -1,5 +1,4 @@
 import abc
-
 from university.structure import Student, GroupOfStudent, Faculty
 
 
@@ -15,6 +14,7 @@ class Serializer(abc.ABC):
 
 
 class StudentSerializer(Serializer):
+
     def serialize(self, obj):
         return {
             "last_name": obj.last_name,
@@ -29,7 +29,7 @@ class GroupSerializer(Serializer):
     def serialize(self, obj):
         student_serializer = StudentSerializer()
         result = {
-            "name": obj.name,
+            "group_number": obj.group_number,
             "student_list": []
         }
         for el in obj:
@@ -38,7 +38,7 @@ class GroupSerializer(Serializer):
 
     def deserialize(self, obj):
         student_serializer = StudentSerializer()
-        result = GroupOfStudent(obj["name"])
+        result = GroupOfStudent(obj["group_number"])
         for el in obj["student_list"]:
             result.add(student_serializer.deserialize(el))
         return result
@@ -48,13 +48,13 @@ class FacultySerializer(Serializer):
     def serialize(self, obj):
         group_serializer = GroupSerializer()
         result = {
-            "name": obj.name,
+            "faculty_name": obj.faculty_name,
             "groups": []
         }
-        new_faculty = Faculty(obj.name)
+        new_faculty = Faculty(obj.faculty_name)
         while not obj.is_empty():
             group = obj.pop()
-            result["group"].append(group_serializer.serialize(group))
+            result["groups"].append(group_serializer.serialize(group))
             new_faculty.push(group)
         while not new_faculty.is_empty():
             obj.push(new_faculty.pop())
@@ -62,7 +62,7 @@ class FacultySerializer(Serializer):
 
     def deserialize(self, obj):
         group_serializer = GroupSerializer()
-        result = Faculty(obj["name"])
+        result = Faculty(obj["faculty_name"])
         obj["groups"].reverse()
         for group in obj["groups"]:
             result.push(group_serializer.deserialize(group))

@@ -1,4 +1,8 @@
+import json
+
 from university.structure import Student, GroupOfStudent, Faculty
+from university.serializer import FacultySerializer
+import os
 
 
 def passage_from_faculty_to_deposit(group_name):
@@ -10,8 +14,8 @@ def passage_from_faculty_to_deposit(group_name):
             faculty.push(cur_group)
             return cur_group
         save_deposit.push(cur_group)
-    print(f"Группа {group_name} не найдена")
-    return
+    # print(f"Группа {group_name} не найдена")
+    # return
 
 
 def passage_from_deposit_to_faculty(group_name):
@@ -23,25 +27,25 @@ def passage_from_deposit_to_faculty(group_name):
             faculty.push(cur_group)
             return cur_group
         faculty.push(cur_group)
-    print(f"Группа {group_name} не найдена")
-    return
+    # print(f"Группа {group_name} не найдена")
+    # return
 
 
 def add_student_in_group(student_name, student_age, some_group: GroupOfStudent):
     """Добавление студента в группу"""
     for students in some_group:
         if students.last_name == student_name:
-            ans = input(f"Студент {student_name} уже есть в группе, добавить (y/n)")
-            if ans == "y":
+            ans = input(f"\nСтудент {student_name} уже есть в группе, добавить (y/n) ")
+            if ans == "y" or "н":
                 student = Student(student_name, student_age)
                 some_group.add(student)
-                print(f"Студент {student_name} добавлен в группу \n")
+                print(f"\nСтудент {student_name} добавлен в группу \n")
                 return
-            elif ans == "n":
+            elif ans == "n" or "т":
                 return
     new_student = Student(student_name, student_age)
     some_group.add(new_student)
-    print(f"Студент {student_name} добавлен в группу {some_group.group_number}\n")
+    print(f"\nСтудент {student_name} добавлен в группу {some_group.group_number}")
 
 
 def search_student(student_name, some_group: GroupOfStudent):
@@ -76,28 +80,27 @@ def group_act(act):  # Взаимодейстие с группой
     cur_group = passage_from_deposit_to_faculty(new_group) or passage_from_faculty_to_deposit(new_group)
     if act == "1":
         if cur_group:
-            print(f"\nГруппа {new_group} уже есть\n")
+            print(f"\nГруппа {new_group} уже есть")
             return
         group = GroupOfStudent(new_group)
         faculty.push(group)
-        print(f"\nГруппа {new_group} добавлена\n")
+        print(f"\nГруппа {new_group} добавлена")
         return
     elif cur_group:
         if act == "2":
             faculty.pop()
-            print(f"\nГруппа {new_group} была удалена\n")
+            print(f"\nГруппа {new_group} была удалена")
             return
         elif act == "3":
             new_group_number = input("Введите новый номер группы: ")
             cur_group.group_number = new_group_number
-            print("Номер группы был изменен\n")
+            print("Номер группы был изменен")
             return
     else:
-        print(f"\nГруппа {new_group} не найдена\n")
+        print(f"\nГруппа {new_group} не найдена")
 
 
 def student_act(act):
-
     if act == "4":
         return
 
@@ -110,13 +113,14 @@ def student_act(act):
         if cur_group:
             add_student_in_group(student_name, student_age, cur_group)
         else:
-            ans = input("Такой группы нет, хотите создать ? (y/n)")
-            if ans == "y":
+            ans = input("Такой группы нет, хотите создать ? (y/n) ")
+            if ans == "y" or "н":
                 cur_group = GroupOfStudent(student_group)
                 student = Student(student_name, student_age)
                 cur_group.add(student)
                 faculty.push(cur_group)
-            elif ans == "n":
+                print(f"Студент {student_name} добавлен в группу {cur_group.group_number}\n")
+            elif ans == "n" or "т":
                 return
 
     elif act == "2":
@@ -130,7 +134,7 @@ def student_act(act):
             else:
                 print(f"\nСтудент {student_name} не найден\n")
         else:
-            print(f"\nГруппа {student_group} не найдена\n")
+            print(f"\nГруппа {student_group} не найдена")
 
     elif act == "3":
         student_group = input("Введите номер группы студента: ")
@@ -171,19 +175,24 @@ def display_faculty():
         print(f"\nНомер группы: {cur_group.group_number}")
         if not cur_group.is_empty():
             for students in cur_group:
-                print(f"[{students.last_name}: {students.age}]", sep=',', end=' ')
+                print(f"[{students.last_name}: {students.age}]", sep=', ', end=' ')
+            print()
         else:
-            print("\nВ группе пока нет студентов")
-        print("\n")
+            print("В группе пока нет студентов")
         save_deposit.push(cur_group)
 
 
-def download():  # TODO выгрузка с файл
+def download():
     pass
 
 
-def save():  # TODO запись в файл
-    pass
+def save():
+    passage_from_deposit_to_faculty(None)
+    serializer = FacultySerializer()
+    faculty_serialize = serializer.serialize(faculty)
+    with open("faculty_data.json", "w", encoding="utf-8") as inf:
+        json.dump(faculty_serialize, inf, ensure_ascii=False, indent=3)
+    print("\nСохранение завершено успешно")
 
 
 def choice(user_choice):
@@ -204,6 +213,9 @@ def choice(user_choice):
     elif user_choice == "4":
         display_faculty()
 
+    elif user_choice == "5":
+        save()
+
 
 def main():
     while True:
@@ -214,17 +226,23 @@ def main():
                             "Сохранение в файл - 5\n"
                             "Завершение работы - 6\n")
         if user_choice == "6":
+            ans = input("Сохранить изменения ? (y/n) ")
+            if ans == "y" or "н":
+                save()
             exit()
         choice(user_choice)
 
 
 if __name__ == "__main__":
-    if "json файл пуст":  # TODO взаимодействие с файлом .json
-        faculty = Faculty("К.Т")
-        save_deposit = Faculty("Save Deposit")
-    # else подгрузка с json файла
+    if os.stat("faculty_data.json").st_size == 0:
+        faculty = Faculty(input("Введите название факультета ").title())
+    else:
+        faculty_serializer = FacultySerializer()
+        with open("faculty_data.json") as ouf:
+            download_data = json.load(ouf)
+        faculty = faculty_serializer.deserialize(download_data)
+
+    save_deposit = Faculty("Save Deposit")
     main()
 
 # TODO описание функций
-
-
