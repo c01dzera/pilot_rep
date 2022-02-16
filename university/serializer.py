@@ -2,7 +2,7 @@ import abc
 from university.structure import Student, GroupOfStudent, Faculty
 
 
-class Serializer(abc.ABC):
+class Serializer(abc.ABC):  # Todo описание методов класса
 
     @abc.abstractmethod
     def serialize(self, obj):  # превращаем питоновский объект в словарь
