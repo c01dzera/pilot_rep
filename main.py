@@ -4,7 +4,11 @@ from university.serializer import FacultySerializer
 import os
 
 
-def passage_from_faculty_to_deposit(group_name, faculty, save_deposit):
+def passage_from_faculty_to_deposit(group_name: str, faculty: Faculty, save_deposit: Faculty) -> None or GroupOfStudent:
+    """
+    Поиск группы, перемещая группы из стэка 'faculty' в стэк 'save_deposit',
+    возвращает искомую группу, иначе перемещает все группы в стэк 'save_deposit'.
+    """
     if faculty.is_empty():
         return
     while faculty.size() != 0:
@@ -15,7 +19,11 @@ def passage_from_faculty_to_deposit(group_name, faculty, save_deposit):
         save_deposit.push(cur_group)
 
 
-def passage_from_deposit_to_faculty(group_name, faculty, save_deposit):
+def passage_from_deposit_to_faculty(group_name: str, faculty: Faculty, save_deposit: Faculty) -> None or GroupOfStudent:
+    """
+    Поиск группы, перемещая группы из стэка 'save_deposit' в стэк 'faculty',
+    возвращает искомую группу, иначе перемещает все группы в стэк 'faculty'.
+    """
     if save_deposit.is_empty():
         return
     while save_deposit.size() != 0:
@@ -26,8 +34,8 @@ def passage_from_deposit_to_faculty(group_name, faculty, save_deposit):
         faculty.push(cur_group)
 
 
-def add_student_in_group(student_name, student_age, some_group: GroupOfStudent):
-    """Добавление студента в группу"""
+def add_student_in_group(student_name: str, student_age: str, some_group: GroupOfStudent) -> None:
+    """ Добавление студента в группу. """
     for students in some_group:
         if students.last_name == student_name:
             ans = input(f"\nСтудент {student_name} уже есть в группе, добавить (y/n) ")
@@ -43,15 +51,16 @@ def add_student_in_group(student_name, student_age, some_group: GroupOfStudent):
     print(f"\nСтудент {student_name} добавлен в группу {some_group.group_number}")
 
 
-def search_student(student_name, some_group: GroupOfStudent):
-    """Поиск студента в группе"""
+def search_student(student_name: str, some_group: GroupOfStudent) -> (int, Student) or None:
+    """ Поиск студента в группе. """
     for inx, students in enumerate(some_group):
         if students.last_name == student_name:
             return inx, students
     return
 
 
-def action():
+def action() -> str:
+    """ Передает выбор пользователя. """
     act = input("Добавить - 1\n"
                 "Удалить - 2\n"
                 "Изменение данных - 3\n"
@@ -59,7 +68,8 @@ def action():
     return act
 
 
-def faculty_act(act, faculty):  # Взаимодейстие с факльтетом
+def faculty_act(act: str, faculty: Faculty) -> None:
+    """ Производит взаимодействие со стэком 'faculty'. """
     if act == "1":
         print(f"\n{faculty.faculty_name}\n")
     elif act == "2":
@@ -68,7 +78,8 @@ def faculty_act(act, faculty):  # Взаимодейстие с факльтет
         return
 
 
-def group_act(act, faculty, save_deposit):  # Взаимодейстие с группой
+def group_act(act: str, faculty: Faculty, save_deposit: Faculty):
+    """ Производит взаимодействие с группой студентов. """
     if act == "4":
         return
     new_group = input("Введите номер группы: ")
@@ -97,20 +108,21 @@ def group_act(act, faculty, save_deposit):  # Взаимодейстие с гр
         print(f"\nГруппа {new_group} не найдена")
 
 
-def student_act(act, faculty, save_deposit):
-    if act == "4":
-        return
+def student_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
+    """ Производит взаимодействие со студентом. """
 
     student_name = input("Введите фамилию студета: ").title()
 
     if act == "1":
         student_age = input("Введите возраст студента: ")
         student_group = input("Введите номер группы для добавления студента: ")
+
         cur_group = passage_from_faculty_to_deposit(student_group, faculty, save_deposit) \
             or passage_from_deposit_to_faculty(student_group, faculty, save_deposit)
 
         if cur_group:
             add_student_in_group(student_name, student_age, cur_group)
+            return
         else:
             ans = input("Такой группы нет, хотите создать ? (y/n) ")
             if ans == "y" or "н":
@@ -118,61 +130,56 @@ def student_act(act, faculty, save_deposit):
                 student = Student(student_name, student_age)
                 cur_group.add(student)
                 faculty.push(cur_group)
-                print(f"Студент {student_name} добавлен в группу {cur_group.group_number}\n")
+                print(f"\nСтудент {student_name} добавлен в группу {cur_group.group_number}")
+                return
             elif ans == "n" or "т":
                 return
 
-    elif act == "2":
-        student_group = input("Введите номер группы студента для удаления: ")
-        cur_group = passage_from_faculty_to_deposit(student_group, faculty, save_deposit) \
-            or passage_from_deposit_to_faculty(student_group, faculty, save_deposit)
+    student_group = input(f"Введите номер группы {'для удаления' if act == '2' else 'для поиска'} студента: ")
+    cur_group = passage_from_faculty_to_deposit(student_group, faculty, save_deposit) \
+        or passage_from_deposit_to_faculty(student_group, faculty, save_deposit)
 
+    if act == "2" or act == "3":
         if cur_group:
-            cur_student = search_student(student_name, cur_group)
-            if cur_student:
-                cur_group.pop(cur_student[0])
-                print(f"\nСтудент {student_name} был удален\n")
+            if act == "2":
+                cur_student = search_student(student_name, cur_group)
+                if cur_student:
+                    cur_group.pop(cur_student[0])
+                    print(f"\nСтудент {student_name} был удален")
+                else:
+                    print(f"\nСтудент {student_name} не найден")
+
             else:
-                print(f"\nСтудент {student_name} не найден\n")
+                cur_student = search_student(student_name, cur_group)[1]
+                if cur_student:
+                    ans = input("Изменить фамилию - 1\n"
+                                "Изменить возраст - 2\n"
+                                "Изменить все данные - 3 \n")
+                    if ans == "1":
+                        new_student_name = input("Введите фамилию для изменения: ").title()
+                        cur_student.last_name = new_student_name
+                        print("\n")
+                    elif ans == "2":
+                        new_age = input("Введите возраст студента для изменения: ")
+                        cur_student.age = new_age
+                    elif ans == "3":
+                        new_student_name = input("Введите фамилию для изменения: ").title()
+                        new_age = input("Введите возраст студента для изменения: ")
+                        cur_student.last_name = new_student_name
+                        cur_student.age = new_age
+                    print("Данные успешно изменены")
+                else:
+                    print(f"\nСтудент {student_name} не найден")
         else:
             print(f"\nГруппа {student_group} не найдена")
 
-    elif act == "3":
-        student_group = input("Введите номер группы студента: ")
-        cur_group = passage_from_faculty_to_deposit(student_group, faculty, save_deposit) \
-            or passage_from_deposit_to_faculty(student_group, faculty, save_deposit)
 
-        if cur_group:
-            cur_student = search_student(student_name, cur_group)[1]
-            if cur_student:
-                ans = input("\nИзменить фамилию - 1\n"
-                            "\nИзменить возраст - 2\n"
-                            "\nИзменить все данные - 3 \n")
-                if ans == "1":
-                    new_student_name = input("Введите фамилию для изменения: ").title()
-                    cur_student.last_name = new_student_name
-                elif ans == "2":
-                    new_age = input("Введите возраст студента для изменения: ")
-                    cur_student.age = new_age
-                elif ans == "3":
-                    new_student_name = input("Введите фамилию для изменения: ").title()
-                    new_age = input("Введите возраст студента для изменения: ")
-                    cur_student.last_name = new_student_name
-                    cur_student.age = new_age
-                    print("Данные успешно изменены")
-            else:
-                print(f"\nСтудент {student_name} не найден\n")
-        else:
-            print(f"\nГруппа {student_group} не найдена\n")
-
-
-def display_faculty(faculty, save_deposit):
-    """Вывод всей структуры"""
+def display_faculty(faculty: Faculty, save_deposit: Faculty) -> None:
+    """ Вывод всей структуры. """
     if not save_deposit.size() and not faculty.size():
-        print("\nВ факультете пока нет групп\n")
-    while save_deposit.size() != 0:
-        group = save_deposit.pop()
-        faculty.push(group)
+        print("\nВ факультете пока нет групп")
+        return
+    passage_from_deposit_to_faculty("-1", faculty, save_deposit)
     while faculty.size() != 0:
         cur_group = faculty.pop()
         print(f"\nНомер группы: {cur_group.group_number}")
@@ -185,7 +192,8 @@ def display_faculty(faculty, save_deposit):
         save_deposit.push(cur_group)
 
 
-def download():
+def download() -> (Faculty, Faculty, FacultySerializer):
+    """ Загрузка данных с файла .json. """
     save_deposit = Faculty("Save Deposit")
     serializer = FacultySerializer()
     if os.stat("faculty_data.json").st_size == 0:
@@ -197,15 +205,17 @@ def download():
     return faculty, save_deposit, serializer
 
 
-def save(serializer, faculty, save_deposit):
-    passage_from_deposit_to_faculty(None, faculty, save_deposit)
+def save(serializer: FacultySerializer, faculty: Faculty, save_deposit: Faculty) -> None:
+    """ Сохранение данных в файл .json. """
+    passage_from_deposit_to_faculty("-1", faculty, save_deposit)
     faculty_serialize = serializer.serialize(faculty)
     with open("faculty_data.json", "w", encoding="utf-8") as inf:
         json.dump(faculty_serialize, inf, ensure_ascii=False, indent=3)
     print("\nСохранение завершено успешно")
 
 
-def choice(user_choice, faculty, save_deposit, serializer):
+def choice(user_choice: str, faculty: Faculty, save_deposit: Faculty, serializer: FacultySerializer):
+    """ Реализуется выбор пользователя. """
     if user_choice == "1":
         print("\nФакультет: ")
         faculty_act(input("Вывести название факультета - 1\n"
@@ -228,6 +238,10 @@ def choice(user_choice, faculty, save_deposit, serializer):
 
 
 def main():
+    """
+    Запускает пользовательский интерфейс, в зависимости от выбора
+    пользователяб передает данные следющим функциям.
+    """
     faculty, save_deposit, serializer = download()
     while True:
         user_choice = input("\nФакультет - 1\n"
@@ -246,5 +260,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# TODO описание функций
