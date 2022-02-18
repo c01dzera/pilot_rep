@@ -2,7 +2,8 @@ import abc
 from university.structure import Student, GroupOfStudent, Faculty
 
 
-class Serializer(abc.ABC):  # Todo описание методов класса
+class Serializer(abc.ABC):
+    """ Абстрактный метод сериализатора. """
 
     @abc.abstractmethod
     def serialize(self, obj):  # превращаем питоновский объект в словарь
@@ -14,14 +15,17 @@ class Serializer(abc.ABC):  # Todo описание методов класса
 
 
 class StudentSerializer(Serializer):
+    """ Сериализатор для класса 'Student'. """
 
-    def serialize(self, obj):
+    def serialize(self, obj: Student) -> dict:
+        """ Сериализация объекта(класс 'Student') """
         return {
             "last_name": obj.last_name,
             "age": obj.age
         }
 
-    def deserialize(self, obj):
+    def deserialize(self, obj: dict) -> Student:
+        """ Десереализация словаря. """
         return Student(obj["last_name"], obj["age"])
 
 

@@ -1,17 +1,23 @@
-class LinkedList:  # TODO описание методов класса
+class LinkedList:
+    """ Модель связного спика. """
 
     class LinkedListElement:
-        def __init__(self, value, next_node=None):
+        """ Модель узла связного списка. """
+        def __init__(self, value, next_node=None) -> None:
+            """ Инициализация атрибутов класса: значение и ссылка на следующий узел """
             self.value = value
             self.next_node = next_node
 
     class LinkedListIterator:
+        """ Модель итератора для связного списка. """
         __current_element = None
 
         def __init__(self, first_element):
+            """ Инициализирутся атрибут итератора, а именно первый элемент списка """
             self.__current_element = first_element
 
         def __next__(self):
+            """ Возвращает слудующий элемент списка если он не пуст, иначе исключение. """
             if self.__current_element is None:
                 raise StopIteration
 
@@ -19,19 +25,23 @@ class LinkedList:  # TODO описание методов класса
             self.__current_element = self.__current_element.next_node
             return element
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """ Инициализация первой ссылки (головы) связного списка. """
         self.__head = None
 
-    def clear(self):
+    def clear(self) -> None:
+        """ Полное очищение связного списка. """
         self.__head = None
 
-    def is_empty(self):
+    def is_empty(self) -> bool:
+        """ Проверка связного списка на пустоту. """
         return self.__head is None
 
     def __iter__(self):
         return LinkedList.LinkedListIterator(self.__head)
 
     def add(self, value):
+        """ Добавление элемента в связный список. """
         if self.__head is None:
             self.__head = LinkedList.LinkedListElement(value)
 
@@ -41,7 +51,8 @@ class LinkedList:  # TODO описание методов класса
                 current = current.next_node
             current.next_node = LinkedList.LinkedListElement(value)
 
-    def insert(self, idx, value):
+    def insert(self, idx: int, value) -> None:
+        """ Добавлние элемента в связный список согласно индексу """
         if self.__head is None:
             self.__head = LinkedList.LinkedListElement(value)
             return
@@ -58,7 +69,8 @@ class LinkedList:  # TODO описание методов класса
         prev_next = current.next_node
         current.next_node = LinkedList.LinkedListElement(value, prev_next)
 
-    def pop(self, idx=0):
+    def pop(self, idx=0) -> None or LinkedListElement:
+        """ Удаление элемента согласно индесу """
         if self.__head is None:
             return None
 
