@@ -78,7 +78,7 @@ def faculty_act(act: str, faculty: Faculty) -> None:
         return
 
 
-def group_act(act: str, faculty: Faculty, save_deposit: Faculty):
+def group_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
     """ Производит взаимодействие с группой студентов. """
     if act == "4":
         return
@@ -102,7 +102,7 @@ def group_act(act: str, faculty: Faculty, save_deposit: Faculty):
         elif act == "3":
             new_group_number = input("Введите новый номер группы: ")
             cur_group.group_number = new_group_number
-            print("Номер группы был изменен")
+            print("\nНомер группы был изменен")
             return
     else:
         print(f"\nГруппа {new_group} не найдена")
@@ -214,7 +214,7 @@ def save(serializer: FacultySerializer, faculty: Faculty, save_deposit: Faculty)
     print("\nСохранение завершено успешно")
 
 
-def choice(user_choice: str, faculty: Faculty, save_deposit: Faculty, serializer: FacultySerializer):
+def choice(user_choice: str, faculty: Faculty, save_deposit: Faculty, serializer: FacultySerializer) -> None:
     """ Реализуется выбор пользователя. """
     if user_choice == "1":
         print("\nФакультет: ")
@@ -237,7 +237,7 @@ def choice(user_choice: str, faculty: Faculty, save_deposit: Faculty, serializer
         save(serializer, faculty, save_deposit)
 
 
-def main():
+def main() -> None:
     """
     Запускает пользовательский интерфейс, в зависимости от выбора
     пользователяб передает данные следющим функциям.
