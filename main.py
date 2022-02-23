@@ -68,14 +68,26 @@ def action() -> str:
     return act
 
 
-def faculty_act(act: str, faculty: Faculty) -> None:
+def faculty_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
     """ Производит взаимодействие со стэком 'faculty'. """
     if act == "1":
         print(f"\n{faculty.faculty_name}\n")
     elif act == "2":
         faculty.faculty_name = input("Введите новое название факультета: ").title()
     elif act == "3":
+        clear_faculty(faculty, save_deposit)
+    elif act == "4":
         return
+
+
+def clear_faculty(faculty: Faculty, save_deposit: Faculty) -> None:
+    """ Удаление всех данных из факультета. """
+    ans = input("Вы уверены что хотите удалить все данные ? (y/n)")
+    if ans == "y" or "н":
+        faculty.clear()
+        save_deposit.clear()
+        print("\nДанные удалены")
+    return
 
 
 def group_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
@@ -220,7 +232,8 @@ def choice(user_choice: str, faculty: Faculty, save_deposit: Faculty, serializer
         print("\nФакультет: ")
         faculty_act(input("Вывести название факультета - 1\n"
                           "Изменить название факультета - 2\n"
-                          "Назад - 3\n"), faculty)
+                          "Удалить все данные - 3\n"
+                          "Назад - 4\n"), faculty, save_deposit)
 
     elif user_choice == "2":
         print("\nГруппа: ")
@@ -260,3 +273,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+# TODO удаление всего факультета, удаление всех сдудентов из группы(без удаления группы)
