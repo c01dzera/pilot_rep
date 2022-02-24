@@ -75,24 +75,20 @@ def faculty_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
     elif act == "2":
         faculty.faculty_name = input("Введите новое название факультета: ").title()
     elif act == "3":
-        clear_faculty(faculty, save_deposit)
+        ans = input("Вы уверены что хотите удалить все данные ? (y/n)")
+        if ans == "y" or "н":
+            ans = input("Вы уверены что хотите удалить все данные ? (y/n)")
+            if ans == "y" or "н":
+                faculty.clear()
+                save_deposit.clear()
+                print("\nДанные удалены")
     elif act == "4":
         return
 
 
-def clear_faculty(faculty: Faculty, save_deposit: Faculty) -> None:
-    """ Удаление всех данных из факультета. """
-    ans = input("Вы уверены что хотите удалить все данные ? (y/n)")
-    if ans == "y" or "н":
-        faculty.clear()
-        save_deposit.clear()
-        print("\nДанные удалены")
-    return
-
-
 def group_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
     """ Производит взаимодействие с группой студентов. """
-    if act == "4":
+    if act == "5":
         return
     new_group = input("Введите номер группы: ")
     cur_group = passage_from_deposit_to_faculty(new_group, faculty, save_deposit) \
@@ -112,6 +108,12 @@ def group_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
             print(f"\nГруппа {new_group} была удалена")
             return
         elif act == "3":
+            ans = input("Вы действительно хотите удалить все данные группы?(y/n) ")
+            if ans == "y" or "н":
+                cur_group.clear()
+                print("\n Данные былт удалены")
+            return
+        elif act == "4":
             new_group_number = input("Введите новый номер группы: ")
             cur_group.group_number = new_group_number
             print("\nНомер группы был изменен")
@@ -233,11 +235,15 @@ def choice(user_choice: str, faculty: Faculty, save_deposit: Faculty, serializer
         faculty_act(input("Вывести название факультета - 1\n"
                           "Изменить название факультета - 2\n"
                           "Удалить все данные - 3\n"
-                          "Назад - 4\n"), faculty, save_deposit)
+                          "Изменитб номер группы -4\n"
+                          "Назад - 5\n"), faculty, save_deposit)
 
     elif user_choice == "2":
         print("\nГруппа: ")
-        group_act(action(), faculty, save_deposit)
+        group_act(input("Добавить новую группу - 1\n"
+                        "Удалить группу - 2\n"
+                        "Удалить все данные с группы - 3\n"
+                        "Назад - 4\n"), faculty, save_deposit)
 
     elif user_choice == "3":
         print("\nСтудент: ")
