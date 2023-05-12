@@ -39,12 +39,12 @@ def add_student_in_group(student_name: str, student_age: str, some_group: GroupO
     for students in some_group:
         if students.last_name == student_name:
             ans = input(f"\nСтудент {student_name} уже есть в группе, добавить (y/n) ")
-            if ans == "y" or "н":
+            if ans == "y":
                 student = Student(student_name, student_age)
                 some_group.add(student)
                 print(f"\nСтудент {student_name} добавлен в группу \n")
                 return
-            elif ans == "n" or "т":
+            elif ans == "n":
                 return
     new_student = Student(student_name, student_age)
     some_group.add(new_student)
@@ -75,13 +75,11 @@ def faculty_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
     elif act == "2":
         faculty.faculty_name = input("Введите новое название факультета: ").title()
     elif act == "3":
-        ans = input("Вы уверены что хотите удалить все данные ? (y/n)")
-        if ans == "y" or "н":
-            ans = input("Вы уверены что хотите удалить все данные ? (y/n)")
-            if ans == "y" or "н":
-                faculty.clear()
-                save_deposit.clear()
-                print("\nДанные удалены")
+        ans = input("Вы уверены что хотите удалить все данные ? (y/n) ")
+        if ans == "y":
+            faculty.clear()
+            save_deposit.clear()
+            print("\nДанные удалены")
     elif act == "4":
         return
 
@@ -93,7 +91,6 @@ def group_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
     new_group = input("Введите номер группы: ")
     cur_group = passage_from_deposit_to_faculty(new_group, faculty, save_deposit) \
         or passage_from_faculty_to_deposit(new_group, faculty, save_deposit)
-
     if act == "1":
         if cur_group:
             print(f"\nГруппа {new_group} уже есть")
@@ -109,7 +106,7 @@ def group_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
             return
         elif act == "3":
             ans = input("Вы действительно хотите удалить все данные группы?(y/n) ")
-            if ans == "y" or "н":
+            if ans == "y":
                 cur_group.clear()
                 print("\n Данные былт удалены")
             return
@@ -124,7 +121,8 @@ def group_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
 
 def student_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
     """ Производит взаимодействие со студентом. """
-
+    if act == "4":
+        return
     student_name = input("Введите фамилию студета: ").title()
 
     if act == "1":
@@ -139,14 +137,14 @@ def student_act(act: str, faculty: Faculty, save_deposit: Faculty) -> None:
             return
         else:
             ans = input("Такой группы нет, хотите создать ? (y/n) ")
-            if ans == "y" or "н":
+            if ans == "y":
                 cur_group = GroupOfStudent(student_group)
                 student = Student(student_name, student_age)
                 cur_group.add(student)
                 faculty.push(cur_group)
                 print(f"\nСтудент {student_name} добавлен в группу {cur_group.group_number}")
                 return
-            elif ans == "n" or "т":
+            elif ans == "n":
                 return
 
     student_group = input(f"Введите номер группы {'для удаления' if act == '2' else 'для поиска'} студента: ")
@@ -235,7 +233,7 @@ def choice(user_choice: str, faculty: Faculty, save_deposit: Faculty, serializer
         faculty_act(input("Вывести название факультета - 1\n"
                           "Изменить название факультета - 2\n"
                           "Удалить все данные - 3\n"
-                          "Изменитб номер группы -4\n"
+                          "Изменить номер группы -4\n"
                           "Назад - 5\n"), faculty, save_deposit)
 
     elif user_choice == "2":
@@ -243,7 +241,8 @@ def choice(user_choice: str, faculty: Faculty, save_deposit: Faculty, serializer
         group_act(input("Добавить новую группу - 1\n"
                         "Удалить группу - 2\n"
                         "Удалить все данные с группы - 3\n"
-                        "Назад - 4\n"), faculty, save_deposit)
+                        "Изменить номер группы - 4\n"
+                        "Назад - 5"), faculty, save_deposit)
 
     elif user_choice == "3":
         print("\nСтудент: ")
@@ -271,13 +270,12 @@ def main() -> None:
                             "Завершение работы - 6\n")
         if user_choice == "6":
             ans = input("Сохранить изменения ? (y/n) ")
-            if ans == "y" or "н":
+            if ans == "y":
                 save(serializer, faculty, save_deposit)
             exit()
+
         choice(user_choice, faculty, save_deposit, serializer)
 
 
 if __name__ == "__main__":
     main()
-
-# TODO удаление всего факультета, удаление всех сдудентов из группы(без удаления группы)
